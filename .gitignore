@@ -1,0 +1,15 @@
+# Compiled files
+*.o
+*.obj
+*.exe
+
+# Code::Blocks
+bin/
+obj/
+
+# Temporary files
+*.layout
+*.depend
+
+# Windows
+Thumbs.db
