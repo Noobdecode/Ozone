@@ -1,8 +1,15 @@
 #include <stdio.h>
 
+void showWelcomeScreen(void)
+{
+    printf("==========================\n");
+    printf("     Welcome to Ozone     \n");
+    printf("       Version 0.1\n");
+    printf("==========================\n");
+}
 int main(void)
 {
-    printf("Welcome to Ozone!\n");
+    showWelcomeScreen();
 
     return 0;
 }
