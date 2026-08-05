@@ -4,6 +4,7 @@
 void showWelcomeScreen(void);
 void startShell(void);
 void help(void);
+void about(void);
 
 int main(void)
 {
@@ -38,25 +39,31 @@ void startShell(void)
     {
     printf("\nguest@ozone:/home$ ");
     scanf("%99s", command);
+
+    int found = 0;
     for (int i = 0; i < 5; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
-                switch (i)
+            found = 1;
+            switch (i)
                 {
                     case 0:
                     help();
                     break;
+
+                    case 1:
+                    printf("Shutting down Ozone...\n");
+                    return;
+
+                    case 3:
+                        about();
+                        break;
                 }
+                break;
             }
 
     }
-    if (strcmp(command,"exit") == 0)
-    {
-        printf("shutting down Ozone...\n");
-        break;
-    }
-    printf("You typed: %s\n", command);
 
     }
 
@@ -76,5 +83,19 @@ void help(void)
     printf("clear     - Clear the screen.\n");
     printf("exit      - Shut down Ozone.\n");
 
+    printf("\n====================================\n");
+}
+void about(void)
+{
+    printf("====================================\n");
+    printf("          ABOUT OZONE\n");
+    printf("====================================\n\n");
+    printf("Ozone is a command-line operating system\n");
+    printf("simulator written in the C programming\n");
+    printf("language.\n\n");
+    printf("Project developed for: ICE-1212\n");
+    printf("Structured Programming Language Lab.\n\n");
+    printf("Current Version : 0.1\n\n");
+    printf("Developer : Jayed Siddiq\n");
     printf("\n====================================\n");
 }
