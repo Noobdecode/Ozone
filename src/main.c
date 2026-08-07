@@ -6,6 +6,7 @@ void startShell(void);
 void help(void);
 void about(void);
 void version(void);
+void clear(void);
 
 int main(void)
 {
@@ -64,6 +65,10 @@ void startShell(void)
                     case 3:
                         about();
                         break;
+
+                    case 4:
+                        clear();
+                        break;
                 }
                 break;
             }
@@ -116,4 +121,18 @@ void version(void)
     printf("Built   : %s\n", __DATE__);
 
     printf("\n====================================\n");
+}
+
+void clear(void)
+{
+    printf("\033[2J\033[H");
+    /*ANSI escape sequence breakdown:
+    \033 : escape character according to ASCII
+    [    : following characters from a control sequence
+    2J   : clear the entire screen
+    H    : move the cursor to the home position*/
+    fflush(stdout);
+    //ensuring the escape sequence is sent to the terminal immediately//
+    showWelcomeScreen();
+    printf("\nStarting Ozone Shell...\n");
 }
