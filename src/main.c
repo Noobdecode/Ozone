@@ -5,15 +5,15 @@ void showWelcomeScreen(void);
 void startShell(void);
 void help(void);
 void about(void);
+void version(void);
 
 int main(void)
 {
     showWelcomeScreen();
-
     startShell();
-
     return 0;
 }
+
 void showWelcomeScreen(void)
 {
     printf("=================================\n");
@@ -21,6 +21,7 @@ void showWelcomeScreen(void)
     printf("          Version 0.1\n");
     printf("=================================\n");
 }
+
 void startShell(void)
 {
     char command[100];
@@ -49,12 +50,16 @@ void startShell(void)
             switch (i)
                 {
                     case 0:
-                    help();
-                    break;
+                        help();
+                        break;
 
                     case 1:
-                    printf("Shutting down Ozone...\n");
-                    return;
+                        printf("Shutting down Ozone...\n");
+                        return;
+
+                    case 2:
+                        version();
+                        break;
 
                     case 3:
                         about();
@@ -62,12 +67,11 @@ void startShell(void)
                 }
                 break;
             }
-
     }
 
     }
-
 }
+
 void help(void)
 {
  printf("====================================\n");
@@ -85,6 +89,7 @@ void help(void)
 
     printf("\n====================================\n");
 }
+
 void about(void)
 {
     printf("====================================\n");
@@ -97,5 +102,18 @@ void about(void)
     printf("Structured Programming Language Lab.\n\n");
     printf("Current Version : 0.1\n\n");
     printf("Developer : Jayed Siddiq\n");
+    printf("\n====================================\n");
+}
+
+void version(void)
+{
+    printf("====================================\n");
+    printf("        OZONE VERSION\n");
+    printf("====================================\n\n");
+
+    printf("Version : 0.1\n");
+    printf("Status  : Stable\n");
+    printf("Built   : %s\n", __DATE__);
+
     printf("\n====================================\n");
 }
