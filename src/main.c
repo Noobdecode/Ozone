@@ -115,6 +115,7 @@ void help(void)
     printf("about     - Show information about Ozone.\n");
     printf("version   - Display the current Ozone version.\n");
     printf("clear     - Clear the screen.\n");
+    printf("echo      - Display the provided text.\n");
     printf("exit      - Shut down Ozone.\n");
 
     printf("\n====================================\n");
