@@ -7,6 +7,8 @@ void help(void);
 void about(void);
 void version(void);
 void clear(void);
+void echo(char *text);
+
 
 int main(void)
 {
@@ -27,23 +29,35 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[5][100] =
+    char commands[6][100] =
     {
         "help",
         "exit",
         "version",
         "about",
-        "clear"
+        "clear",
+        "echo"
     };
 
     printf("\nStarting Ozone Shell...\n");
     while (1)
     {
     printf("\nguest@ozone:/home$ ");
-    scanf("%99s", command);
+    fgets(command, sizeof(command), stdin);
+    char *newline = strchr(command, '\n');
+
+    if (newline != NULL)
+    {
+        *newline = '\0';
+    }
+    char *space = strchr(command, ' ');
+    if (space != NULL)
+    {
+        *space = '\0';
+    }
 
     int found = 0;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -68,6 +82,17 @@ void startShell(void)
 
                     case 4:
                         clear();
+                        break;
+
+                    case 5:
+                        if(space != NULL)
+                        {
+                            echo(space + 1);
+                        }
+                        else
+                        {
+                            printf("echo: missing argument\n");
+                        }
                         break;
                 }
                 break;
@@ -135,4 +160,8 @@ void clear(void)
     //ensuring the escape sequence is sent to the terminal immediately//
     showWelcomeScreen();
     printf("\nStarting Ozone Shell...\n");
+}
+void echo(char *text)
+{
+    printf("%s\n", text);
 }
