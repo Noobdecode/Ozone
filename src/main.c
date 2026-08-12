@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include<time.h>
 
 void showWelcomeScreen(void);
 void startShell(void);
@@ -10,6 +11,8 @@ void clear(void);
 void echo(char *text);
 void cwd(void);
 void user(void);
+void utilities(void);
+void showDateTime(void);
 
 int main(void)
 {
@@ -30,7 +33,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[8][100] =
+    char commands[9][100] =
     {
         "help",
         "exit",
@@ -39,7 +42,8 @@ void startShell(void)
         "clear",
         "echo",
         "cwd",
-        "user"
+        "user",
+        "utilities"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -60,7 +64,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -104,6 +108,10 @@ void startShell(void)
 
                     case 7:
                         user();
+                        break;
+
+                    case 8:
+                        utilities();
                         break;
                 }
                 break;
@@ -189,4 +197,65 @@ void cwd (void)
 void user(void)
 {
     printf("The current user is: guest\n");
+}
+
+void utilities(void)
+{
+    int choice;
+
+    while (1)
+    {
+         printf("\n====================================\n");
+        printf("          OZONE UTILITIES\n");
+        printf("====================================\n");
+        printf("1. Date and Time\n");
+        printf("2. Calculator\n");
+        printf("0. Return to shell\n");
+
+        printf("\nSelect an option: ");
+        scanf("%d", &choice);
+
+        switch(choice)
+        {
+        case 1:
+            showDateTime();
+            break;
+
+        case 2:
+            printf("Calculator utility is coming soon.\n");
+            break;
+
+        case 0:
+            return;
+
+            default:
+                printf("Invalid option.\n");
+        }
+    }
+}
+
+
+void showDateTime(void)
+{
+    time_t currentTime;
+    struct tm *localTime;
+
+    currentTime = time(NULL);
+    localTime = localtime(&currentTime);
+
+    printf("\n====================================\n");
+    printf("           DATE & TIME\n");
+    printf("====================================\n");
+
+    printf("Date : %02d/%02d/%04d\n",
+           localTime->tm_mday,
+           localTime->tm_mon + 1,
+           localTime->tm_year + 1900);
+
+    printf("Time : %02d:%02d:%02d\n",
+           localTime->tm_hour,
+           localTime->tm_min,
+           localTime->tm_sec);
+
+    printf("\n====================================\n");
 }
