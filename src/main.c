@@ -8,6 +8,7 @@ void about(void);
 void version(void);
 void clear(void);
 void echo(char *text);
+void cwd(void);
 
 
 int main(void)
@@ -29,14 +30,15 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[6][100] =
+    char commands[7][100] =
     {
         "help",
         "exit",
         "version",
         "about",
         "clear",
-        "echo"
+        "echo",
+        "cwd"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -57,7 +59,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 7; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -94,6 +96,10 @@ void startShell(void)
                             printf("echo: missing argument\n");
                         }
                         break;
+
+                    case 6:
+                        cwd();
+                        break;
                 }
                 break;
             }
@@ -116,6 +122,7 @@ void help(void)
     printf("version   - Display the current Ozone version.\n");
     printf("clear     - Clear the screen.\n");
     printf("echo      - Display the provided text.\n");
+    printf("cwd       - Display the current working directory.\n");
     printf("exit      - Shut down Ozone.\n");
 
     printf("\n====================================\n");
@@ -162,7 +169,13 @@ void clear(void)
     showWelcomeScreen();
     printf("\nStarting Ozone Shell...\n");
 }
+
 void echo(char *text)
 {
     printf("%s\n", text);
+}
+
+void cwd (void)
+{
+    printf("/home\n");
 }
