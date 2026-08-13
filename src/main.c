@@ -13,6 +13,7 @@ void cwd(void);
 void user(void);
 void utilities(void);
 void showDateTime(void);
+void calculator(void);
 
 int main(void)
 {
@@ -205,7 +206,7 @@ void utilities(void)
 
     while (1)
     {
-         printf("\n====================================\n");
+        printf("\n====================================\n");
         printf("          OZONE UTILITIES\n");
         printf("====================================\n");
         printf("1. Date and Time\n");
@@ -222,7 +223,7 @@ void utilities(void)
             break;
 
         case 2:
-            printf("Calculator utility is coming soon.\n");
+            calculator();
             break;
 
         case 0:
@@ -260,4 +261,51 @@ void showDateTime(void)
            //utilizing time.h library//
 
     printf("\n====================================\n");
+}
+
+void calculator(void)
+{
+   double firstnumber;
+   double secondnumber;
+   char operator;
+
+printf("\n====================================\n");
+printf("          OZONE CALCULATOR\n");
+printf("====================================\n\n");
+
+printf("Enter first number : ");
+scanf("%lf", &firstnumber);
+printf("Enter operator (+ - * /) : ");
+scanf(" %c", &operator);
+printf("Enter second number : ");
+scanf("%lf", &secondnumber);
+
+switch (operator)
+{
+case '+':
+    printf("Result : %.2f\n", firstnumber + secondnumber);
+    break;
+
+case '-':
+    printf("Result : %.2f\n", firstnumber - secondnumber);
+    break;
+
+case '*':
+    printf("Result : %.2f\n", firstnumber * secondnumber);
+    break;
+
+case '/':
+    if (secondnumber == 0)
+        {
+            printf("Error: division by zero.\n");
+        }
+        else
+        {
+            printf("Result : %.2f\n", firstnumber / secondnumber);
+        }
+        break;
+
+default:
+    printf("Invalid Operator.\n");
+}
 }
