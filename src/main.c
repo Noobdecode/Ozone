@@ -13,6 +13,7 @@ struct FileSystemNode root;
 struct FileSystemNode home;
 struct FileSystemNode system;
 struct FileSystemNode tmp;
+struct FileSystemNode guest;
 struct FileSystemNode *currentDirectory;
 
 void showWelcomeScreen(void);
@@ -29,6 +30,7 @@ void showDateTime(void);
 void calculator(void);
 void initializeFileSystem(void);
 void printPath(struct FileSystemNode *node);
+void cd(char *directory);
 
 int main(void)
 {
@@ -50,7 +52,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[9][100] =
+    char commands[10][100] =
     {
         "help",
         "exit",
@@ -60,13 +62,17 @@ void startShell(void)
         "echo",
         "cwd",
         "user",
-        "utilities"
+        "utilities",
+        "cd"
     };
 
     printf("\nStarting Ozone Shell...\n");
     while (1)
     {
-    printf("\nguest@ozone:/home$ ");
+    printf("\nguest@ozone:");
+    printPath(currentDirectory);
+    printf("$ ");
+
     fgets(command, sizeof(command), stdin);
     char *newline = strchr(command, '\n');
 
@@ -81,7 +87,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -129,6 +135,17 @@ void startShell(void)
 
                     case 8:
                         utilities();
+                        break;
+
+                    case 9:
+                        if(space != NULL)
+                        {
+                            cd(space + 1);
+                        }
+                        else
+                        {
+                            printf("cd: missing argument\n");
+                        }
                         break;
                 }
                 break;
@@ -342,14 +359,20 @@ void initializeFileSystem(void)
     strcpy(tmp.name, "tmp");
     tmp.parent = &root;
 
+    strcpy(guest.name, "guest");
+    guest.parent = &home;
+
     root.children[0] = &home;
     root.children[1] = &system;
     root.children[2] = &tmp;
+    home.children[0] = &guest;
+    home.childCount = 1;
 
     root.childCount = 3;
-    home.childCount = 0;
+    home.childCount = 1;
     system.childCount = 0;
     tmp.childCount = 0;
+    guest.childCount = 0;
 
     currentDirectory = &home;
 }
@@ -369,4 +392,25 @@ void printPath(struct FileSystemNode *node)
     {
         printf("/");
     }
+}
+
+void cd(char *directory)
+{
+    if (strcmp(directory, "..") == 0)
+    {
+        if (currentDirectory != &root)
+        {
+            currentDirectory = currentDirectory->parent;
+        }
+        return;
+    }
+   for (int i = 0; i < currentDirectory->childCount; i++)
+   {
+       if (strcmp(currentDirectory->children[i]->name, directory) == 0)
+       {
+           currentDirectory = currentDirectory->children[i];
+           return;
+       }
+   }
+   printf("cd: directory not found\n");
 }
