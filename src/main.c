@@ -2,6 +2,19 @@
 #include <string.h>
 #include<time.h>
 
+struct FileSystemNode
+{
+ char name[100];
+ struct FileSystemNode *parent;
+ struct FileSystemNode *children[10];
+ int childCount;
+};
+struct FileSystemNode root;
+struct FileSystemNode home;
+struct FileSystemNode system;
+struct FileSystemNode tmp;
+struct FileSystemNode *currentDirectory;
+
 void showWelcomeScreen(void);
 void startShell(void);
 void help(void);
@@ -14,9 +27,12 @@ void user(void);
 void utilities(void);
 void showDateTime(void);
 void calculator(void);
+void initializeFileSystem(void);
+void printPath(struct FileSystemNode *node);
 
 int main(void)
 {
+    initializeFileSystem();
     showWelcomeScreen();
     startShell();
     return 0;
@@ -192,7 +208,9 @@ void echo(char *text)
 
 void cwd (void)
 {
-    printf("/home\n");
+    printf("Current directory: ");
+    printPath(currentDirectory);
+    printf("\n");
 }
 
 void user(void)
@@ -308,4 +326,47 @@ case '/':
 default:
     printf("Invalid Operator.\n");
 }
+}
+
+void initializeFileSystem(void)
+{
+    strcpy(root.name, "/");
+    root.parent = NULL;
+
+    strcpy(home.name, "home");
+    home.parent = &root;
+
+    strcpy(system.name, "system");
+    system.parent = &root;
+
+    strcpy(tmp.name, "tmp");
+    tmp.parent = &root;
+
+    root.children[0] = &home;
+    root.children[1] = &system;
+    root.children[2] = &tmp;
+
+    root.childCount = 3;
+    home.childCount = 0;
+    system.childCount = 0;
+    tmp.childCount = 0;
+
+    currentDirectory = &home;
+}
+
+void printPath(struct FileSystemNode *node)
+{
+    if (node == &root)
+    {
+        printf("/");
+        return;
+    }
+
+    printPath(node->parent);
+    printf("%s", node->name);
+
+    if (node != currentDirectory)
+    {
+        printf("/");
+    }
 }
