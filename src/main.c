@@ -31,6 +31,7 @@ void calculator(void);
 void initializeFileSystem(void);
 void printPath(struct FileSystemNode *node);
 void cd(char *directory);
+void ls(void);
 
 int main(void)
 {
@@ -52,7 +53,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[10][100] =
+    char commands[11][100] =
     {
         "help",
         "exit",
@@ -63,7 +64,8 @@ void startShell(void)
         "cwd",
         "user",
         "utilities",
-        "cd"
+        "cd",
+        "ls"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -87,7 +89,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -147,6 +149,10 @@ void startShell(void)
                             printf("cd: missing argument\n");
                         }
                         break;
+
+                    case 10:
+                        ls();
+                        break;
                 }
                 break;
             }
@@ -170,6 +176,8 @@ void help(void)
     printf("clear     - Clear the screen.\n");
     printf("echo      - Display the provided text.\n");
     printf("cwd       - Display the current working directory.\n");
+    printf("ls        - List the contents of the current directory.\n");
+    printf("cd        - Change the current working directory.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
@@ -413,4 +421,18 @@ void cd(char *directory)
        }
    }
    printf("cd: directory not found\n");
+}
+
+void ls(void)
+{
+    if (currentDirectory->childCount == 0)
+    {
+        printf("directory is empty.\n");
+        return;
+    }
+
+    for (int i = 0; i < currentDirectory->childCount; i++)
+    {
+        printf("%s\n", currentDirectory->children[i]->name);
+    }
 }
