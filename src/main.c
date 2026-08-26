@@ -2,18 +2,28 @@
 #include <string.h>
 #include<time.h>
 
+enum NodeType
+{
+    DIRECTORY,
+    NODE_FILE
+};
 struct FileSystemNode
 {
  char name[100];
+ enum NodeType type;
  struct FileSystemNode *parent;
  struct FileSystemNode *children[10];
  int childCount;
 };
+
 struct FileSystemNode root;
 struct FileSystemNode home;
 struct FileSystemNode system;
 struct FileSystemNode tmp;
 struct FileSystemNode guest;
+
+struct FileSystemNode nodes[100];
+int nodeCount = 0;
 struct FileSystemNode *currentDirectory;
 
 void showWelcomeScreen(void);
@@ -32,7 +42,7 @@ void initializeFileSystem(void);
 void printPath(struct FileSystemNode *node);
 void cd(char *directory);
 void ls(void);
-
+void mkdir(char *name);
 int main(void)
 {
     initializeFileSystem();
@@ -53,7 +63,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[11][100] =
+    char commands[12][100] =
     {
         "help",
         "exit",
@@ -65,7 +75,8 @@ void startShell(void)
         "user",
         "utilities",
         "cd",
-        "ls"
+        "ls",
+        "mkdir"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -89,7 +100,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < 12; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -153,6 +164,17 @@ void startShell(void)
                     case 10:
                         ls();
                         break;
+
+                    case 11:
+                        if(space != NULL)
+                        {
+                            mkdir(space + 1);
+                        }
+                        else
+                        {
+                            printf("mkdir: missing argument\n");
+                        }
+                        break;
                 }
                 break;
             }
@@ -178,6 +200,7 @@ void help(void)
     printf("cwd       - Display the current working directory.\n");
     printf("ls        - List the contents of the current directory.\n");
     printf("cd        - Change the current working directory.\n");
+    printf("mkdir     - Create a new directory.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
@@ -356,18 +379,23 @@ default:
 void initializeFileSystem(void)
 {
     strcpy(root.name, "/");
+    root.type = DIRECTORY;
     root.parent = NULL;
 
     strcpy(home.name, "home");
+    home.type = DIRECTORY;
     home.parent = &root;
 
     strcpy(system.name, "system");
+    system.type = DIRECTORY;
     system.parent = &root;
 
     strcpy(tmp.name, "tmp");
+    tmp.type = DIRECTORY;
     tmp.parent = &root;
 
     strcpy(guest.name, "guest");
+    guest.type = DIRECTORY;
     guest.parent = &home;
 
     root.children[0] = &home;
@@ -435,4 +463,36 @@ void ls(void)
     {
         printf("%s\n", currentDirectory->children[i]->name);
     }
+}
+
+void mkdir(char *name)
+{
+    if (currentDirectory->childCount >= 10)
+    {
+        printf("mkdir: directory is full\n");
+        return;
+    }
+    for (int i=0; i < currentDirectory->childCount; i++)
+    {
+        if(strcmp(currentDirectory->children[i]->name, name)==0)
+        {
+            printf("mkdir: directory already exists\n");
+            return;
+        }
+    }
+    if(nodeCount >= 100)
+    {
+        printf("mkdir: fileSystem is full\n");
+        return;
+    }
+
+    strcpy(nodes[nodeCount].name, name);
+    nodes[nodeCount].type = DIRECTORY;
+    nodes[nodeCount].parent = currentDirectory;
+    nodes[nodeCount].childCount = 0;
+
+    currentDirectory->children[currentDirectory->childCount] = &nodes[nodeCount];
+    currentDirectory->childCount++;
+
+    nodeCount++;
 }
