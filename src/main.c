@@ -43,6 +43,8 @@ void printPath(struct FileSystemNode *node);
 void cd(char *directory);
 void ls(void);
 void mkdir(char *name);
+void touch(char *name);
+
 int main(void)
 {
     initializeFileSystem();
@@ -63,7 +65,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[12][100] =
+    char commands[13][100] =
     {
         "help",
         "exit",
@@ -76,7 +78,8 @@ void startShell(void)
         "utilities",
         "cd",
         "ls",
-        "mkdir"
+        "mkdir",
+        "touch"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -100,7 +103,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 13; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -175,6 +178,16 @@ void startShell(void)
                             printf("mkdir: missing argument\n");
                         }
                         break;
+
+                    case 12:
+                        if(space != NULL)
+                        {
+                            touch(space + 1);
+                        }
+                        else
+                        {
+                            printf("touch: missing filename\n");
+                        }
                 }
                 break;
             }
@@ -201,6 +214,7 @@ void help(void)
     printf("ls        - List the contents of the current directory.\n");
     printf("cd        - Change the current working directory.\n");
     printf("mkdir     - Create a new directory.\n");
+    printf("touch     - Create a new file.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
@@ -218,7 +232,7 @@ void about(void)
     printf("Project developed for: ICE-1212\n");
     printf("Structured Programming Language Lab.\n\n");
     printf("Current Version : 0.1\n\n");
-    printf("Developer : Jayed Siddiq\n");
+    printf("Developer : Jayed Siddiq, Irin Jaman Sneha\n");
     printf("\n====================================\n");
 }
 
@@ -461,7 +475,14 @@ void ls(void)
 
     for (int i = 0; i < currentDirectory->childCount; i++)
     {
-        printf("%s\n", currentDirectory->children[i]->name);
+        if(currentDirectory->children[i]->type == DIRECTORY)
+        {
+            printf("%s/\n", currentDirectory->children[i]->name);
+        }
+        else
+        {
+            printf("%s\n", currentDirectory->children[i]->name);
+        }
     }
 }
 
@@ -492,6 +513,45 @@ void mkdir(char *name)
     nodes[nodeCount].childCount = 0;
 
     currentDirectory->children[currentDirectory->childCount] = &nodes[nodeCount];
+    currentDirectory->childCount++;
+
+    nodeCount++;
+}
+
+void touch(char *name)
+{
+    if (currentDirectory->childCount >= 10)
+    {
+        printf("touch: directory is full\n");
+        return;
+    }
+
+    for (int i = 0; i < currentDirectory->childCount; i++)
+    {
+        if (strcmp(currentDirectory->children[i]->name, name) == 0)
+        {
+            printf("touch: file already exists\n");
+            return;
+        }
+    }
+
+    if (nodeCount >= 100)
+    {
+        printf("touch: filesystem is full\n");
+        return;
+    }
+
+    strcpy(nodes[nodeCount].name, name);
+
+    nodes[nodeCount].type = NODE_FILE;
+
+    nodes[nodeCount].parent = currentDirectory;
+
+    nodes[nodeCount].childCount = 0;
+
+    currentDirectory->children[currentDirectory->childCount] =
+        &nodes[nodeCount];
+
     currentDirectory->childCount++;
 
     nodeCount++;

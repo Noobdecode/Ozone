@@ -3,4 +3,5 @@
 A terminal-based operating system simulator written in C.
 
 Author:
-Jayed Siddiq
+Jayed Siddiq, Irin Jaman Sneha
+
