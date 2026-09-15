@@ -248,6 +248,7 @@ void help(void)
     printf("help      - Display this help menu.\n");
     printf("about     - Show information about Ozone.\n");
     printf("version   - Display the current Ozone version.\n");
+    printf("utilities - Open the Ozone utilities menu.\n");
     printf("clear     - Clear the screen.\n");
     printf("echo      - Display the provided text.\n");
     printf("cwd       - Display the current working directory.\n");
@@ -255,6 +256,8 @@ void help(void)
     printf("cd        - Change the current working directory.\n");
     printf("mkdir     - Create a new directory.\n");
     printf("touch     - Create a new file.\n");
+    printf("write     - Write text to a file.\n");
+    printf("read      - Read the contents of a file.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
