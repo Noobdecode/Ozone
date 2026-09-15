@@ -45,8 +45,9 @@ void cd(char *directory);
 void ls(void);
 void mkdir(char *name);
 void touch(char *name);
-void write(char *filename, char *text)
-;
+void write(char *filename, char *text);
+void read(char *filename);
+
 int main(void)
 {
     initializeFileSystem();
@@ -67,7 +68,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[14][100] =
+    char commands[15][100] =
     {
         "help",
         "exit",
@@ -82,7 +83,8 @@ void startShell(void)
         "ls",
         "mkdir",
         "touch",
-        "write"
+        "write",
+        "read"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -106,7 +108,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < 15; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -196,25 +198,37 @@ void startShell(void)
                     case 13:
                        if(space != NULL)
                          {
-        char *argument = space + 1;
-        char *secondSpace = strchr(argument, ' ');
+                           char *argument = space + 1;
+                           char *secondSpace = strchr(argument, ' ');
 
-        if(secondSpace != NULL)
-        {
-            *secondSpace = '\0';
-            write(argument, secondSpace + 1);
-        }
-        else
-        {
-            printf("Usage: write <filename> <text>\n");
-        }
-        }
-        else
-        {
-        printf("Usage: write <filename> <text>\n");
-        }
-        break;
-                }
+                           if(secondSpace != NULL)
+                            {
+                               *secondSpace = '\0';
+                               write(argument, secondSpace + 1);
+                            }
+                           else
+                            {
+                               printf("Usage: write <filename> <text>\n");
+                            }
+                         }
+                       else
+                         {
+                            printf("Usage: write <filename> <text>\n");
+                         }
+                       break;
+
+                    case 14:
+                        if(space != NULL)
+                        {
+                            read(space+1);
+                        }
+                        else
+                        {
+                            printf("read: missing filename\n");
+                        }
+                        break;
+
+                    }
                 break;
             }
     }
@@ -612,4 +626,25 @@ void write (char *filename, char *text)
         }
     }
     printf("write: file not found\n");
+}
+
+void read(char *filename)
+{
+    for (int i = 0; i < currentDirectory->childCount; i++)
+    {
+        if(strcmp(currentDirectory->children[i]->name, filename) == 0)
+        {
+            if(currentDirectory->children[i]->type == NODE_FILE)
+            {
+                printf("%s\n", currentDirectory->children[i]->content);
+                return;
+            }
+            else
+            {
+                printf("read: is a directory\n");
+                return;
+            }
+        }
+    }
+    printf("read: file not found\n");
 }
