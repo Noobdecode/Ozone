@@ -47,6 +47,7 @@ void mkdir(char *name);
 void touch(char *name);
 void write(char *filename, char *text);
 void read(char *filename);
+void rm(char *name);
 
 int main(void)
 {
@@ -68,7 +69,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[15][100] =
+    char commands[16][100] =
     {
         "help",
         "exit",
@@ -84,7 +85,8 @@ void startShell(void)
         "mkdir",
         "touch",
         "write",
-        "read"
+        "read",
+        "rm"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -108,7 +110,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 16; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -228,6 +230,17 @@ void startShell(void)
                         }
                         break;
 
+                    case 15:
+                       if(space != NULL)
+                       {
+                           rm(space+1);
+                       }
+                       else
+                       {
+                           printf("rm: missing filename\n");
+                       }
+                       break;
+
                     }
                 break;
             }
@@ -258,6 +271,7 @@ void help(void)
     printf("touch     - Create a new file.\n");
     printf("write     - Write text to a file.\n");
     printf("read      - Read the contents of a file.\n");
+    printf("rm        - Remove a file.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
@@ -650,4 +664,33 @@ void read(char *filename)
         }
     }
     printf("read: file not found\n");
+}
+
+void rm(char *name)
+{
+    for (int i = 0; i < currentDirectory->childCount; i++)
+    {
+        if (strcmp(currentDirectory->children[i]->name, name) == 0)
+        {
+            if (currentDirectory->children[i]->type == NODE_FILE)
+            {
+                for (int j = i; j < currentDirectory->childCount - 1; j++)
+                {
+                    currentDirectory->children[j] =
+                        currentDirectory->children[j + 1];
+                }
+
+                currentDirectory->childCount--;
+
+                return;
+            }
+            else
+            {
+                printf("rm: is a directory\n");
+                return;
+            }
+        }
+    }
+
+    printf("rm: file not found\n");
 }
