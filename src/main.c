@@ -11,6 +11,7 @@ struct FileSystemNode
 {
  char name[100];
  enum NodeType type;
+ char content[1000];
  struct FileSystemNode *parent;
  struct FileSystemNode *children[10];
  int childCount;
@@ -44,7 +45,8 @@ void cd(char *directory);
 void ls(void);
 void mkdir(char *name);
 void touch(char *name);
-
+void write(char *filename, char *text)
+;
 int main(void)
 {
     initializeFileSystem();
@@ -65,7 +67,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[13][100] =
+    char commands[14][100] =
     {
         "help",
         "exit",
@@ -79,7 +81,8 @@ void startShell(void)
         "cd",
         "ls",
         "mkdir",
-        "touch"
+        "touch",
+        "write"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -103,7 +106,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < 14; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -188,6 +191,29 @@ void startShell(void)
                         {
                             printf("touch: missing filename\n");
                         }
+                        break;
+
+                    case 13:
+                       if(space != NULL)
+                         {
+        char *argument = space + 1;
+        char *secondSpace = strchr(argument, ' ');
+
+        if(secondSpace != NULL)
+        {
+            *secondSpace = '\0';
+            write(argument, secondSpace + 1);
+        }
+        else
+        {
+            printf("Usage: write <filename> <text>\n");
+        }
+        }
+        else
+        {
+        printf("Usage: write <filename> <text>\n");
+        }
+        break;
                 }
                 break;
             }
@@ -456,11 +482,19 @@ void cd(char *directory)
     }
    for (int i = 0; i < currentDirectory->childCount; i++)
    {
-       if (strcmp(currentDirectory->children[i]->name, directory) == 0)
-       {
-           currentDirectory = currentDirectory->children[i];
-           return;
-       }
+      if (strcmp(currentDirectory->children[i]->name, directory) == 0)
+{
+    if (currentDirectory->children[i]->type == DIRECTORY)
+    {
+        currentDirectory = currentDirectory->children[i];
+    }
+    else
+    {
+        printf("cd: not a directory\n");
+    }
+
+    return;
+}
    }
    printf("cd: directory not found\n");
 }
@@ -547,6 +581,8 @@ void touch(char *name)
 
     nodes[nodeCount].parent = currentDirectory;
 
+    nodes[nodeCount].content[0] = '\0';
+
     nodes[nodeCount].childCount = 0;
 
     currentDirectory->children[currentDirectory->childCount] =
@@ -555,4 +591,25 @@ void touch(char *name)
     currentDirectory->childCount++;
 
     nodeCount++;
+}
+
+void write (char *filename, char *text)
+{
+    for (int i=0; i < currentDirectory->childCount; i++)
+    {
+        if (strcmp(currentDirectory->children[i]->name, filename) == 0)
+        {
+            if(currentDirectory->children[i]->type == NODE_FILE)
+            {
+                strcpy(currentDirectory->children[i]->content, text);
+                return;
+            }
+            else
+            {
+                printf("write: is a directory\n");
+                return;
+            }
+        }
+    }
+    printf("write: file not found\n");
 }
