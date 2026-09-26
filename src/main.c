@@ -48,6 +48,7 @@ void touch(char *name);
 void write(char *filename, char *text);
 void read(char *filename);
 void rm(char *name);
+void rmdir(char *name);
 
 int main(void)
 {
@@ -69,7 +70,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[16][100] =
+    char commands[17][100] =
     {
         "help",
         "exit",
@@ -86,7 +87,8 @@ void startShell(void)
         "touch",
         "write",
         "read",
-        "rm"
+        "rm",
+        "rmdir"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -110,7 +112,7 @@ void startShell(void)
     }
 
     int found = 0;
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 17; i++)
     {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -241,6 +243,17 @@ void startShell(void)
                        }
                        break;
 
+                    case 16:
+                        if(space != NULL)
+                        {
+                            rmdir(space + 1);
+                        }
+                        else
+                        {
+                            printf("rmdir: missing directory name\n");
+                        }
+                        break;
+
                     }
                 break;
             }
@@ -272,6 +285,7 @@ void help(void)
     printf("write     - Write text to a file.\n");
     printf("read      - Read the contents of a file.\n");
     printf("rm        - Remove a file.\n");
+    printf("rmdir     - Remove an empty directory.\n");
     printf("user      - Display information about the current user.\n");
     printf("exit      - Shut down Ozone.\n");
 
@@ -693,4 +707,40 @@ void rm(char *name)
     }
 
     printf("rm: file not found\n");
+}
+
+
+void rmdir(char *name)
+{
+    for (int i = 0; i < currentDirectory->childCount; i++)
+    {
+        if (strcmp(currentDirectory->children[i]->name, name) == 0)
+        {
+            if (currentDirectory->children[i]->type == DIRECTORY)
+            {
+                if (currentDirectory->children[i]->childCount > 0)
+                {
+                    printf("rmdir: directory is not empty\n");
+                    return;
+                }
+
+                for (int j = i; j < currentDirectory->childCount - 1; j++)
+                {
+                    currentDirectory->children[j] =
+                        currentDirectory->children[j + 1];
+                }
+
+                currentDirectory->childCount--;
+
+                return;
+            }
+            else
+            {
+                printf("rmdir: is not a directory\n");
+                return;
+            }
+        }
+    }
+
+    printf("rmdir: directory not found\n");
 }
