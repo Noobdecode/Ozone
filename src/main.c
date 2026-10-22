@@ -66,6 +66,7 @@ void showWelcomeScreen(void)
     printf("=================================\n");
 }
 
+
 void startShell(void)
 {
     char command[100];
@@ -92,32 +93,47 @@ void startShell(void)
     };
 
     printf("\nStarting Ozone Shell...\n");
+
     while (1)
     {
-    printf("\nguest@ozone:");
-    printPath(currentDirectory);
-    printf("$ ");
+        printf("\nguest@ozone:");
+        printPath(currentDirectory);
+        printf("$ ");
 
-    fgets(command, sizeof(command), stdin);
-    char *newline = strchr(command, '\n');
+        if (fgets(command, sizeof(command), stdin) == NULL)
+        {
+            printf("\nShutting down Ozone...\n");
+            return;
+        }
 
-    if (newline != NULL)
-    {
-        *newline = '\0';
-    }
-    char *space = strchr(command, ' ');
-    if (space != NULL)
-    {
-        *space = '\0';
-    }
+        char *newline = strchr(command, '\n');
 
-    int found = 0;
-    for (int i = 0; i < 17; i++)
-    {
+        if (newline != NULL)
+        {
+            *newline = '\0';
+        }
+
+        if (command[0] == '\0')
+        {
+            continue;
+        }
+
+        char *space = strchr(command, ' ');
+
+        if (space != NULL)
+        {
+            *space = '\0';
+        }
+
+        int found = 0;
+
+        for (int i = 0; i < 17; i++)
+        {
             if (strcmp(command, commands[i]) == 0)
             {
-            found = 1;
-            switch (i)
+                found = 1;
+
+                switch (i)
                 {
                     case 0:
                         help();
@@ -140,7 +156,7 @@ void startShell(void)
                         break;
 
                     case 5:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
                             echo(space + 1);
                         }
@@ -163,7 +179,7 @@ void startShell(void)
                         break;
 
                     case 9:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
                             cd(space + 1);
                         }
@@ -178,7 +194,7 @@ void startShell(void)
                         break;
 
                     case 11:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
                             mkdir(space + 1);
                         }
@@ -189,7 +205,7 @@ void startShell(void)
                         break;
 
                     case 12:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
                             touch(space + 1);
                         }
@@ -200,31 +216,31 @@ void startShell(void)
                         break;
 
                     case 13:
-                       if(space != NULL)
-                         {
-                           char *argument = space + 1;
-                           char *secondSpace = strchr(argument, ' ');
+                        if (space != NULL)
+                        {
+                            char *argument = space + 1;
+                            char *secondSpace = strchr(argument, ' ');
 
-                           if(secondSpace != NULL)
+                            if (secondSpace != NULL)
                             {
-                               *secondSpace = '\0';
-                               write(argument, secondSpace + 1);
+                                *secondSpace = '\0';
+                                write(argument, secondSpace + 1);
                             }
-                           else
+                            else
                             {
-                               printf("Usage: write <filename> <text>\n");
+                                printf("Usage: write <filename> <text>\n");
                             }
-                         }
-                       else
-                         {
+                        }
+                        else
+                        {
                             printf("Usage: write <filename> <text>\n");
-                         }
-                       break;
+                        }
+                        break;
 
                     case 14:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
-                            read(space+1);
+                            read(space + 1);
                         }
                         else
                         {
@@ -233,18 +249,18 @@ void startShell(void)
                         break;
 
                     case 15:
-                       if(space != NULL)
-                       {
-                           rm(space+1);
-                       }
-                       else
-                       {
-                           printf("rm: missing filename\n");
-                       }
-                       break;
+                        if (space != NULL)
+                        {
+                            rm(space + 1);
+                        }
+                        else
+                        {
+                            printf("rm: missing filename\n");
+                        }
+                        break;
 
                     case 16:
-                        if(space != NULL)
+                        if (space != NULL)
                         {
                             rmdir(space + 1);
                         }
@@ -253,14 +269,19 @@ void startShell(void)
                             printf("rmdir: missing directory name\n");
                         }
                         break;
+                }
 
-                    }
                 break;
             }
-    }
+        }
 
+        if (found == 0)
+        {
+            printf("Ozone: command not found\n");
+        }
     }
 }
+
 
 void help(void)
 {
