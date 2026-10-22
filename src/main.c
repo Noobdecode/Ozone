@@ -27,6 +27,27 @@ struct FileSystemNode nodes[100];
 int nodeCount = 0;
 struct FileSystemNode *currentDirectory;
 
+
+#define MAX_PROCESSES 50
+
+enum ProcessStatus
+{
+    RUNNING,
+    TERMINATED
+};
+
+struct Process
+{
+    int pid;
+    char name[50];
+    enum ProcessStatus status;
+};
+
+struct Process processes[MAX_PROCESSES];
+int processCount = 0;
+int nextPID = 3;
+
+
 void showWelcomeScreen(void);
 void startShell(void);
 void help(void);
@@ -49,14 +70,65 @@ void write(char *filename, char *text);
 void read(char *filename);
 void rm(char *name);
 void rmdir(char *name);
+void initializeProcesses(void);
+void ps(void);
+void runProcess(char *name);
+void killProcess(int pid);
+
 
 int main(void)
 {
     initializeFileSystem();
+    initializeProcesses();
+
     showWelcomeScreen();
     startShell();
+
     return 0;
 }
+
+
+void initializeProcesses(void)
+{
+    processes[0].pid = 1;
+    strcpy(processes[0].name, "ozone-shell");
+    processes[0].status = RUNNING;
+
+    processes[1].pid = 2;
+    strcpy(processes[1].name, "system-service");
+    processes[1].status = RUNNING;
+
+    processCount = 2;
+}
+
+
+void ps(void)
+{
+    printf("\n========================================\n");
+    printf("          OZONE PROCESS TABLE\n");
+    printf("========================================\n");
+
+    printf("%-10s %-22s %-12s\n", "PID", "NAME", "STATUS");
+    printf("----------------------------------------\n");
+
+    for (int i = 0; i < processCount; i++)
+    {
+        printf("%-10d %-22s ", processes[i].pid, processes[i].name);
+
+        if (processes[i].status == RUNNING)
+        {
+            printf("%-12s\n", "RUNNING");
+        }
+        else
+        {
+            printf("%-12s\n", "TERMINATED");
+        }
+    }
+
+    printf("========================================\n");
+}
+
+
 
 void showWelcomeScreen(void)
 {
@@ -71,7 +143,7 @@ void startShell(void)
 {
     char command[100];
 
-    char commands[17][100] =
+    char commands[18][100] =
     {
         "help",
         "exit",
@@ -89,7 +161,8 @@ void startShell(void)
         "write",
         "read",
         "rm",
-        "rmdir"
+        "rmdir",
+        "ps"
     };
 
     printf("\nStarting Ozone Shell...\n");
@@ -127,7 +200,7 @@ void startShell(void)
 
         int found = 0;
 
-        for (int i = 0; i < 17; i++)
+        for (int i = 0; i < 18; i++)
         {
             if (strcmp(command, commands[i]) == 0)
             {
@@ -269,6 +342,10 @@ void startShell(void)
                             printf("rmdir: missing directory name\n");
                         }
                         break;
+
+                    case 17:
+                        ps();
+                        break;
                 }
 
                 break;
@@ -297,6 +374,7 @@ void help(void)
     printf("version   - Display the current Ozone version.\n");
     printf("utilities - Open the Ozone utilities menu.\n");
     printf("clear     - Clear the screen.\n");
+    printf("ps        - Display the process table.\n");
     printf("echo      - Display the provided text.\n");
     printf("cwd       - Display the current working directory.\n");
     printf("ls        - List the contents of the current directory.\n");
